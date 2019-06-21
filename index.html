@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="../favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <title>ssl</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    
+    <link href="https://fonts.googleapis.com/css?family=Libre+Baskerville" rel="stylesheet">
+    
+<script type="text/javascript" src="d3v5.js"></script>
+  <script src="d3-tip.js"></script>
+    
+    <style>
+        #map{
+            width:600px;
+            height:800px;
+            display:inline-block;
+            border:1px solid black;
+        }
+        #chart{
+            width:600px;
+            height:800px;
+            display:inline-block;
+            border:1px solid black;
+        }
+    </style>
+</head>
+<body>   
+    <div id="chart">
+    </div>
+    <div id="map"></div>
+
+    <div id="2016">2016</div>
+    <div id="2017">2017</div>
+ 
+
+<script src="ssl.js"></script>
+<script type="text/javascript"> 
+    
+    Promise.all([d3.json("ssl_isr.geojson")]).then(function(values) {
+        var data = values[0]
+        
+        drawChart(data)
+    });
+    
+    function drawChart(data){
+        console.log(data)
+        var w = 600
+        var h = 800
+        var svg = d3.select("#chart").append("svg")
+        .attr("width",w)
+        .attr("height",h)
+        
+        var isrMax = d3.max(data.features,function(d){return +d.properties["2016_isr"]})
+        var sslMax = d3.max(data.features,function(d){return +d.properties["SUM_ssl_pr"]})
+        
+        var xScale = d3.scaleLinear().domain([0,isrMax]).range([0,w])
+        var yScale = d3.scaleLinear().domain([0,sslMax]).range([0,h])
+        
+        console.log(isrMax, sslMax)
+        svg.selectAll("circle")
+        .data(data.features)
+        .enter()
+        .append("circle")
+        .attr("r",2)
+        .attr("cx",function(d,i){
+            return xScale(d.properties["2016_isr"])
+        })
+        .attr("cy",function(d,i){
+            return h-yScale(d.properties["SUM_ssl_pr"])
+        })
+    }
+    
+    
+</script>
+</body>
+</html>
